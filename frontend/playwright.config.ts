@@ -22,13 +22,13 @@ export default defineConfig({
   webServer: [
     {
       command: 'cd ../backend && npm run start:dev',
-      url: 'http://127.0.0.1:8080/health',
+      url: 'http://localhost:8080/health',
       reuseExistingServer: true,
       timeout: 60000,
     },
     {
       command: 'npm run dev',
-      url: 'http://127.0.0.1:5173',
+      url: 'http://localhost:5173',
       reuseExistingServer: true,
       timeout: 30000,
     },

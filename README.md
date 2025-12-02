@@ -58,6 +58,12 @@ docker-compose up -d
 # - Frontend: http://localhost:3000 (Docker)
 # - Backend API: http://localhost:3001 (Docker)
 # This allows running both local dev and Docker simultaneously
+
+# Important: Docker uses production builds
+# To see code changes, you need to rebuild containers:
+docker-compose up -d --build
+
+# For development with hot reload, use Option 1 (npm run dev) instead
 ```
 
 ### Running Tests Locally
@@ -78,8 +84,7 @@ cd frontend && npm run test:headed
 guardz-user-management/
 ├── backend/              # NestJS API server
 ├── frontend/             # React client application  
-├── docker-compose.yml    # Production deployment
-├── docker-compose.dev.yml # Development configuration (optional)
+├── docker-compose.yml    # Docker deployment configuration
 ├── docker-compose.override.yml # Local development overrides (gitignored)
 └── deploy.sh             # Automated deployment script
 ```
@@ -99,8 +104,7 @@ npm run test:e2e        # Run E2E tests
 
 # Docker Management
 ./docker-scripts.sh build    # Build images
-./docker-scripts.sh up       # Start production
-./docker-scripts.sh dev      # Start development
+./docker-scripts.sh up       # Start containers
 ./docker-scripts.sh down     # Stop containers
 ./docker-scripts.sh logs     # View logs
 ./docker-scripts.sh test     # Test containers
@@ -150,7 +154,12 @@ docker-compose logs -f
 
 # Stop services
 docker-compose down
+
+# Rebuild after code changes
+docker-compose up -d --build
 ```
+
+**Note:** Docker Compose uses production builds. Code changes require rebuilding containers (`docker-compose up -d --build`). For development with hot reload, use `npm run dev` (Option 1) instead.
 
 ## 🚀 Production Deployment
 

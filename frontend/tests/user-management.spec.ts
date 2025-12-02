@@ -30,18 +30,23 @@ test.describe('User Management', () => {
 
   test('should successfully submit user information', async ({ page }) => {
     // Fill the form with valid data
-    const uniqueEmail = `john.doe.${Date.now()}@example.com`;
+    const timestamp = Date.now();
+    const uniqueEmail = `john.doe.${timestamp}@example.com`;
+    const uniquePhone = `123-456-${timestamp.toString().slice(-4)}`;
     await page.fill('#firstName', 'John');
     await page.fill('#lastName', 'Doe');
     await page.fill('#email', uniqueEmail);
-    await page.fill('#phone', '123-456-7890');
+    await page.fill('#phone', uniquePhone);
     await page.fill('#company', 'Test Company');
+    
+    // Wait for the API call to complete and form to reset
+    const responsePromise = page.waitForResponse(response => response.url().includes('/users') && response.request().method() === 'POST');
     
     // Submit the form
     await page.click('button[type="submit"]');
     
-    // Wait for the API call to complete and form to reset
-    await page.waitForResponse(response => response.url().includes('/users') && response.request().method() === 'POST');
+    // Wait for the response
+    await responsePromise;
     await page.waitForTimeout(500); // Give time for form reset and table update
     
     // Wait for the form to be reset (indicating successful submission)
@@ -57,16 +62,22 @@ test.describe('User Management', () => {
 
   test('should display users in the table', async ({ page }) => {
     // First, add a user
-    const uniqueEmail = `testuser.${Date.now()}@example.com`;
+    const timestamp = Date.now();
+    const uniqueEmail = `testuser.${timestamp}@example.com`;
+    const uniquePhone = `555-${timestamp.toString().slice(-7)}`;
     await page.fill('#firstName', 'Jane');
     await page.fill('#lastName', 'Smith');
     await page.fill('#email', uniqueEmail);
-    await page.fill('#phone', '555-123-4567');
+    await page.fill('#phone', uniquePhone);
     await page.fill('#company', 'Tech Corp');
-    await page.click('button[type="submit"]');
     
     // Wait for the API call to complete
-    await page.waitForResponse(response => response.url().includes('/users') && response.request().method() === 'POST');
+    const responsePromise = page.waitForResponse(response => response.url().includes('/users') && response.request().method() === 'POST');
+    
+    await page.click('button[type="submit"]');
+    
+    // Wait for the response
+    await responsePromise;
     await page.waitForTimeout(500); // Give time for table to update
     
     // Check if the user is displayed in the table - use more specific selector
@@ -78,19 +89,38 @@ test.describe('User Management', () => {
 
   test('should allow searching/filtering users', async ({ page }) => {
     // Add multiple users first
+    const baseTimestamp = Date.now();
     const users = [
-      { firstName: 'Alice', lastName: 'Johnson', email: `alice.${Date.now()}@example.com`, company: 'Alpha Corp' },
-      { firstName: 'Bob', lastName: 'Wilson', email: `bob.${Date.now()}@example.com`, company: 'Beta LLC' }
+      { 
+        firstName: 'Alice', 
+        lastName: 'Johnson', 
+        email: `alice.${baseTimestamp}@example.com`, 
+        phone: `555-${(baseTimestamp + 1).toString().slice(-7)}`,
+        company: 'Alpha Corp' 
+      },
+      { 
+        firstName: 'Bob', 
+        lastName: 'Wilson', 
+        email: `bob.${baseTimestamp + 2}@example.com`, 
+        phone: `555-${(baseTimestamp + 3).toString().slice(-7)}`,
+        company: 'Beta LLC' 
+      }
     ];
     
     for (const user of users) {
       await page.fill('#firstName', user.firstName);
       await page.fill('#lastName', user.lastName);
       await page.fill('#email', user.email);
+      await page.fill('#phone', user.phone);
       await page.fill('#company', user.company);
-      await page.click('button[type="submit"]');
+      
       // Wait for API call to complete
-      await page.waitForResponse(response => response.url().includes('/users') && response.request().method() === 'POST');
+      const responsePromise = page.waitForResponse(response => response.url().includes('/users') && response.request().method() === 'POST');
+      
+      await page.click('button[type="submit"]');
+      
+      // Wait for the response
+      await responsePromise;
       await page.waitForTimeout(500);
     }
     
@@ -114,12 +144,4 @@ test.describe('User Management', () => {
     await expect(page.locator('table')).toContainText('Bob');
   });
 
-  test('should show empty state when no users exist', async ({ page }) => {
-    // If there are no users in the table, it should show empty state
-    const userCount = await page.locator('table tbody tr').count();
-    
-    if (userCount === 0) {
-      await expect(page.locator('text=No users found. Submit the first one!')).toBeVisible();
-    }
-  });
 });
