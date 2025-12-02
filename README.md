@@ -104,6 +104,10 @@ npm run test:e2e        # Run E2E tests
 ./docker-scripts.sh down     # Stop containers
 ./docker-scripts.sh logs     # View logs
 ./docker-scripts.sh test     # Test containers
+
+# Deployment
+./deploy.sh <private_key> [ip]  # Manual deployment
+# Automated deployment via GitHub Actions on PR merge
 ```
 
 ## 🌐 API Endpoints
@@ -150,9 +154,24 @@ docker-compose down
 
 ## 🚀 Production Deployment
 
-### Automated Deployment Script
+### GitHub Actions Automated Deployment
 
-The project includes a deployment script that handles the entire deployment process:
+The project includes automated deployment via GitHub Actions. When you merge a pull request to the main branch, the application automatically deploys to production.
+
+**How it works:**
+- Merge any PR to `main` branch
+- GitHub Actions automatically triggers deployment
+- Application deploys to production server
+- Health checks verify successful deployment
+
+**Security features:**
+- Only repository owner can trigger deployments
+- SSH keys stored securely in GitHub Secrets
+- Automatic verification and cleanup
+
+### Manual Deployment Script
+
+For manual deployments, the project includes a deployment script:
 
 ```bash
 # Deploy to GCP (or any remote server)
@@ -198,6 +217,19 @@ curl http://YOUR_SERVER_IP:8080/health
 curl http://YOUR_SERVER_IP:8080/users
 curl http://YOUR_SERVER_IP/
 ```
+
+### Setting Up Automated Deployment
+
+To enable GitHub Actions automated deployment:
+
+1. **Add Repository Secrets** (Settings → Secrets and variables → Actions):
+   - `GCP_PRIVATE_KEY`: Your SSH private key content
+   - `GCP_HOST`: Your server IP address (optional, defaults to 35.223.194.70)
+   - `GCP_USER`: SSH username (optional, defaults to candidate)
+
+2. **Merge any PR to main branch** - deployment happens automatically
+
+3. **Monitor deployment** in the GitHub Actions tab
 
 ### Environment Configuration
 

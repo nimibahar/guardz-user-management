@@ -21,13 +21,11 @@ function App() {
               Submit your information and view all submitted users
             </p>
           </header>
-          
           <div className="grid gap-8 lg:grid-cols-2">
             <Card title="Submit Information">
               <UserForm />
             </Card>
-            
-            <Card title="Submitted UserS">
+            <Card title="Submitted Users">
               <UserTable />
             </Card>
           </div>
