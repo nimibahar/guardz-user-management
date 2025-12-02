@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Guardz Application Deployment Script
-# Usage: ./deploy.sh <private_key_path> [ip_address]
+# Usage: 
+#   Manual: ./deploy.sh <private_key_path> [ip_address]
+#   CI/CD:  GCP_PRIVATE_KEY="..." GCP_HOST="..." GCP_USER="..." ./deploy.sh
 
 set -e
 
@@ -9,26 +11,62 @@ set -e
 DEFAULT_IP="35.223.194.70"
 DEFAULT_USER="candidate"
 
-# Check arguments
-if [ $# -lt 1 ]; then
-    echo "Usage: $0 <private_key_path> [ip_address]"
+# Function to setup private key from environment
+setup_key_from_env() {
+    if [ -z "$GCP_PRIVATE_KEY" ]; then
+        echo "❌ Error: GCP_PRIVATE_KEY environment variable not set"
+        exit 1
+    fi
+    
+    # Create temporary key file
+    TEMP_KEY=$(mktemp)
+    echo "$GCP_PRIVATE_KEY" > "$TEMP_KEY"
+    chmod 600 "$TEMP_KEY"
+    echo "$TEMP_KEY"
+}
+
+# Function to cleanup temporary key
+cleanup_temp_key() {
+    if [ -n "$TEMP_KEY" ] && [ -f "$TEMP_KEY" ]; then
+        rm -f "$TEMP_KEY"
+    fi
+}
+
+# Trap to ensure cleanup on exit
+trap cleanup_temp_key EXIT
+
+# Determine deployment mode: manual or CI/CD
+if [ $# -eq 0 ] && [ -n "$GCP_PRIVATE_KEY" ]; then
+    # CI/CD mode: use environment variables
+    echo "🤖 Running in CI/CD mode with environment variables"
+    PRIVATE_KEY=$(setup_key_from_env)
+    IP_ADDRESS="${GCP_HOST:-$DEFAULT_IP}"
+    USER="${GCP_USER:-$DEFAULT_USER}"
+elif [ $# -ge 1 ]; then
+    # Manual mode: use command line arguments
+    echo "👨‍💻 Running in manual mode with private key file"
+    PRIVATE_KEY="$1"
+    IP_ADDRESS="${2:-$DEFAULT_IP}"
+    USER="$DEFAULT_USER"
+    
+    # Check if private key exists
+    if [ ! -f "$PRIVATE_KEY" ]; then
+        echo "❌ Error: Private key file not found: $PRIVATE_KEY"
+        exit 1
+    fi
+    
+    # Set correct permissions on private key
+    chmod 600 "$PRIVATE_KEY"
+else
+    echo "❌ Error: Invalid usage"
+    echo "Manual usage: $0 <private_key_path> [ip_address]"
     echo "Example: $0 ~/Downloads/id_ed25519"
     echo "Example: $0 ~/Downloads/id_ed25519 35.223.194.70"
+    echo ""
+    echo "CI/CD usage: Set environment variables and run without arguments"
+    echo "Required: GCP_PRIVATE_KEY, Optional: GCP_HOST, GCP_USER"
     exit 1
 fi
-
-PRIVATE_KEY="$1"
-IP_ADDRESS="${2:-$DEFAULT_IP}"
-USER="$DEFAULT_USER"
-
-# Check if private key exists
-if [ ! -f "$PRIVATE_KEY" ]; then
-    echo "❌ Error: Private key file not found: $PRIVATE_KEY"
-    exit 1
-fi
-
-# Set correct permissions on private key
-chmod 600 "$PRIVATE_KEY"
 
 echo "🚀 Starting deployment to $IP_ADDRESS..."
 echo "📁 Using private key: $PRIVATE_KEY"
