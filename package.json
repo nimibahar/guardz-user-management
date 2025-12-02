@@ -1,0 +1,21 @@
+{
+  "name": "guardz-assignment",
+  "version": "1.0.0",
+  "description": "Full-stack web application for Guardz assignment",
+  "main": "index.js",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run start:dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "test": "cd backend && npm run test && cd ../frontend && npm run test",
+    "test:e2e": "cd frontend && npx playwright test"
+  },
+  "keywords": ["nestjs", "react", "typescript", "full-stack"],
+  "author": "Guardz Assignment",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
