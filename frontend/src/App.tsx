@@ -27,7 +27,7 @@ function App() {
               <UserForm />
             </Card>
             
-            <Card title="Submitted Users">
+            <Card title="Submitted UserS">
               <UserTable />
             </Card>
           </div>
