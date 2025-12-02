@@ -41,7 +41,7 @@ npm run dev:backend   # Backend only on :8080
 npm run dev:frontend  # Frontend only on :5173
 ```
 
-### Option 2: Docker Development (Parallel with Local)
+### Option 2: Docker Development 
 ```bash
 # 1. Clone and navigate to project
 git clone https://github.com/nimibahar/guardz-user-management.git
