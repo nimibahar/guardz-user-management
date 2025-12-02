@@ -21,8 +21,8 @@ A full-stack web application for user information submission and management, bui
 ### Option 1: Development Mode (Recommended for Development)
 ```bash
 # 1. Clone and navigate to project
-git clone <repository-url>
-cd grdz
+git clone https://github.com/nimibahar/guardz-user-management.git
+cd guardz-user-management
 
 # 2. Install dependencies for both services
 cd backend && npm install
@@ -44,19 +44,20 @@ npm run dev:frontend  # Frontend only on :5173
 ### Option 2: Docker Development (Parallel with Local)
 ```bash
 # 1. Clone and navigate to project
-git clone <repository-url>
-cd grdz
+git clone https://github.com/nimibahar/guardz-user-management.git
+cd guardz-user-management
 
 # 2. Start with docker-compose
 docker-compose up -d
 
-# Access the application on different ports:
+# Access the application:
+# - Frontend: http://localhost:80 (Docker)
+# - Backend API: http://localhost:8080 (Docker)
+
+# Note: If you have docker-compose.override.yml locally:
 # - Frontend: http://localhost:3000 (Docker)
 # - Backend API: http://localhost:3001 (Docker)
-
-# Note: You can now run both local and Docker simultaneously:
-# Local:  Frontend :5173, Backend :8080  
-# Docker: Frontend :3000, Backend :3001
+# This allows running both local dev and Docker simultaneously
 ```
 
 ### Running Tests Locally
@@ -74,12 +75,13 @@ cd frontend && npm run test:headed
 ## 📁 Project Structure
 
 ```
-grdz/
-├── backend/          # NestJS API server
-├── frontend/         # React client application  
-├── docker-compose.yml
-├── docker-compose.dev.yml
-└── docker-scripts.sh # Docker management utilities
+guardz-user-management/
+├── backend/              # NestJS API server
+├── frontend/             # React client application  
+├── docker-compose.yml    # Production deployment
+├── docker-compose.dev.yml # Development configuration (optional)
+├── docker-compose.override.yml # Local development overrides (gitignored)
+└── deploy.sh             # Automated deployment script
 ```
 
 ## 🔧 Available Scripts

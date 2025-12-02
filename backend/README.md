@@ -152,10 +152,11 @@ NODE_ENV=development         # Environment mode
 
 ### CORS Configuration
 The API allows requests from:
-- `http://localhost:3000` (dev)
-- `http://localhost:5173` (vite dev)  
-- `http://localhost` (production frontend)
-- `http://localhost:80` (production frontend)
+- `http://localhost:3000` (Docker frontend)
+- `http://localhost:5173` (Local Vite dev server)  
+- `http://localhost:8080` (Same origin)
+- `http://localhost` (Production frontend)
+- `http://localhost:80` (Production frontend)
 
 ### Database Configuration
 - **Type**: SQLite
